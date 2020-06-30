@@ -58,8 +58,7 @@ done
 
 virtualization_detection() {
 
-docker -v /dev/null 2>&1
-if [[ $? == "0" ]]
+if [ -x "$(command -v docker)" ]
   then echo OK
   else echo KO
 fi
