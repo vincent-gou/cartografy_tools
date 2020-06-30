@@ -1,8 +1,25 @@
 rm -f /tmp/docker_net_mapping.txt
-
 CONF_OUTPUT=/tmp/net_extractor_info.txt
+CONFIG_FILE=/tmp/net_extractor_info.ini
 rm -f $CONF_OUTPUT
+rm -f $CONFIG_FILE
 
+Detection() {
+for command in docker nmcli qemu kubectl qemu teamdctl
+do
+  if [ -x "$(command -v $command)" ]
+    then echo detection.$command=yes >> $CONFIG_FILE
+    else echo detection.$command=no >> $CONFIG_FILE
+  fi
+done
+}
+
+Test_detection() {
+if [ $(cat $CONFIG_FILE | grep detection.$1 | cut -f 2 -d '=') = "yes" ]
+  then return 0
+  else return 1
+fi
+}
 
 get_network_mode() {
    docker inspect --format='{{.HostConfig.NetworkMode}}' "$1"
@@ -18,8 +35,7 @@ for container_id in $(docker ps -q); do
   network_mode=$(get_network_mode "${container_id}")
   # skip the containers whose network_mode is 'host' or 'none',
   # but do NOT skip the container created by kubelet.
-  if [[ "${network_mode}" == "host" || \
-    $(! created_by_kubelet "${container_id}") && "${network_mode}" == "none" ]]; then
+  if [[ "${network_mode}" == "host" ||  $(! created_by_kubelet "${container_id}") && "${network_mode}" == "none" ]]; then
     echo "${container_id} => ${network_mode}" >> /tmp/docker_net_mapping.txt
     continue
   fi
@@ -30,8 +46,8 @@ for container_id in $(docker ps -q); do
     network_mode=$(get_network_mode "${network_mode/container:/}")
     # skip the containers whose network_mode is 'host' or 'none',
     # but do NOT skip the container created by kubelet.
-    if [[ "${network_mode}" == "host" || \
-      $(! created_by_kubelet "${container_id}") && "${network_mode}" == "none" ]]; then
+    if [[ "${network_mode}" == "host" ||  $(! created_by_kubelet "${container_id}") && "${network_mode}" == "none" ]]
+    then
       echo "${container_id} => ${network_mode}" >> /tmp/docker_net_mapping.txt
       continue 2
     fi
@@ -64,8 +80,8 @@ if [ -x "$(command -v docker)" ]
 fi
 }
 
-
-
+Detection
+# Run Physical Card detection
 PHYSICAL_NET_DEVICE=$(find /sys/class/net/* -not -lname "*virtual*" | sed -e "s/\// /g" | awk '{print $4}' )
 VIRTUAL_BRIDGE_NET_DEVICE=$(find /sys/class/net/* -lname "*br-*" | sed -e "s/\// /g" | awk '{print $4}' )
 VIRTUAL_ETHERNET_NET_DEVICE=$(find /sys/class/net/* -lname "*veth**" | sed -e "s/\// /g" | awk '{print $4}' )
@@ -103,7 +119,15 @@ do
   echo -e "" | tee -a $CONF_OUTPUT
 done
 
-if [ $(virtualization_detection) == "OK" ]
+Test_detection teamdctl
+if [[ "$?" == "0" ]]
+  then
+      echo -e "TEAM\t\t\tDevice\t\tState\tIP\t\tMask\t"
+  else
+      echo "NO TEAM"
+fi
+
+if [[ $(Test_detection docker) == 0 ]]
   then
       get_docker_info
       echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
