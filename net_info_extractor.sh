@@ -32,7 +32,7 @@ for container_id in $(docker ps -q); do
     # but do NOT skip the container created by kubelet.
     if [[ "${network_mode}" == "host" || \
       $(! created_by_kubelet "${container_id}") && "${network_mode}" == "none" ]]; then
-      echo "${container_id} => ${network_mode}" >> /tmp/docker_net_mapping.txt 
+      echo "${container_id} => ${network_mode}" >> /tmp/docker_net_mapping.txt
       continue 2
     fi
 done
@@ -58,7 +58,7 @@ done
 
 virtualization_detection() {
 
-docker -v >/dev/null
+docker -v /dev/null 2>&1
 if [[ $? == "0" ]]
   then echo OK
   else echo KO
@@ -90,7 +90,7 @@ PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | c
   printf "$PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
   printf "$PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
-done 
+done
 
 echo -e "\t\t\tDevice\tIP\t\tMask\t"
 for DEV in $LOOPBACK_NET_DEVICE
@@ -105,7 +105,7 @@ do
 done
 
 if [ $(virtualization_detection) == "OK" ]
-  then 
+  then
       get_docker_info
       echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
       for DEV in $DOCKER_NET_DEVICE
