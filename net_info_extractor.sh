@@ -127,7 +127,8 @@ if [[ "$?" == "0" ]]
       echo "NO TEAM"
 fi
 
-if [[ $(Test_detection docker) == 0 ]]
+Test_detection docker
+if [[ "$?" == "0" ]]
   then
       get_docker_info
       echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
