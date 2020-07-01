@@ -160,7 +160,8 @@ do
   echo -e "" | tee -a $CONF_OUTPUT
 done
 
-if [ $(virtualization_detection) == "OK" ]
+Test_detection docker
+if [[ "$?" == "0" ]]
   then
     echo -e "\t\t\tDevice\t\tState\tContainer\t\tIP\tDocker_network\tGateway\t\tBridge"
     for DEV in $VIRTUAL_ETHERNET_NET_DEVICE
