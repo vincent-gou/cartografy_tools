@@ -118,7 +118,7 @@ PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | c
   printf "| $PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-  printf "| $PHYSICAL_NET_DEVICE_IP \t\t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
 done
