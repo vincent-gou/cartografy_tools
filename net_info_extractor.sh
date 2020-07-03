@@ -196,17 +196,19 @@ if [[ "$?" == "0" ]]
     if [[ "$?" == "0" ]]
       then
         echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
+        echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
         for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
         do
           NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
           NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
           NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
           printf "Virtual_Bridge_Device:\t" | tee -a $CONF_OUTPUT
-          printf "$DEV\t" | tee -a $CONF_OUTPUT
-          printf "$NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
-          printf "$NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
-          printf "$NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+          printf "| $DEV\t" | tee -a $CONF_OUTPUT
+          printf "| $NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
+          printf "| $NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+          printf "| $NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
           echo -e "" | tee -a $CONF_OUTPUT
+          echo ""
         done
     fi
   fi
@@ -215,6 +217,7 @@ Test_detection command docker
 if [[ "$?" == "0" ]]
   then
     echo -e "\t\t\tDevice\t\tState\tContainer\t\tIP\tDocker_network\tGateway\t\tBridge"
+    echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
     for DEV in $VIRTUAL_ETHERNET_NET_DEVICE
       do
       NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 11 2>/dev/null || printf "down")
@@ -224,14 +227,15 @@ if [[ "$?" == "0" ]]
       DOCKER_CONTAINER_IP=$(cat /tmp/docker_net_mapping.txt | grep $DEV | cut -d ' ' -f 6  2>/dev/null || printf "down")
       DOCKER_CONTAINER_GATEWAY=$(cat /tmp/docker_net_mapping.txt | grep $DEV | cut -d ' ' -f 7  2>/dev/null || printf "down")
       printf "Virtual_Ethernet:\t" | tee -a $CONF_OUTPUT
-      printf "$DEV\t" | tee -a $CONF_OUTPUT
-      printf "$NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
-      printf "%-10s\t" "$DOCKER_CONTAINER_NAME" | tee -a $CONF_OUTPUT
-      printf "%-10s\t" "$DOCKER_CONTAINER_IP" | tee -a $CONF_OUTPUT
-      printf "%-10s\t" "$DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
-      printf "%-10s\t" "$DOCKER_CONTAINER_GATEWAY" | tee -a $CONF_OUTPUT
-      printf "$NET_DEVICE_BRIDGE\t" | tee -a $CONF_OUTPUT
+      printf "| $DEV\t" | tee -a $CONF_OUTPUT
+      printf "| $NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
+      printf "%-10s\t" "| $DOCKER_CONTAINER_NAME" | tee -a $CONF_OUTPUT
+      printf "%-10s\t" "| $DOCKER_CONTAINER_IP" | tee -a $CONF_OUTPUT
+      printf "%-10s\t" "| $DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
+      printf "%-10s\t" "| $DOCKER_CONTAINER_GATEWAY" | tee -a $CONF_OUTPUT
+      printf "| $NET_DEVICE_BRIDGE\t" | tee -a $CONF_OUTPUT
       echo -e | tee -a $CONF_OUTPUT
+      echo ""
       done
 fi
 
