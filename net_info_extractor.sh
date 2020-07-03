@@ -103,7 +103,8 @@ VIRTUAL_ETHERNET_NET_DEVICE=$(find /sys/class/net/* -lname "*veth**" | sed -e "s
 LOOPBACK_NET_DEVICE=$(find /sys/class/net/* -lname "*lo" | sed -e "s/\// /g" | awk '{print $4}' )
 DOCKER_NET_DEVICE=$(find /sys/class/net/* -lname "*docker*" | sed -e "s/\// /g" | awk '{print $4}' )
 
-echo -e "\t\t\tDevice\tLink\tStatus\tSpeed\tIP\t\tMask\t"
+echo -e "\t\t\t| Dev \t| Link\t| State\t| Speed\t| IP\t\t| Mask\t"
+echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
 for DEV in $PHYSICAL_NET_DEVICE
 do
 PHYSICAL_NET_DEVICE_LINK_STATE=$(cat /sys/class/net/$DEV/carrier 2>/dev/null >/dev/null && printf "ok" || printf "ko")
@@ -113,31 +114,56 @@ PHYSICAL_NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f
 PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
 
   printf "Physical_Net_Device:\t" | tee -a $CONF_OUTPUT
-  printf "$DEV \t" | tee -a $CONF_OUTPUT
-  printf "$PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
-  printf "$PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
-  printf "$PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-  printf "$PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
-  printf "$PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+  printf "| $DEV \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
 done
+echo ""
 
-echo -e "\t\t\tDevice\tIP\t\tMask\t"
+echo -e "\t\t\t| Dev\t| IP\t\t| Mask\t|"
 for DEV in $LOOPBACK_NET_DEVICE
 do
   NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | head -1 |  cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
   NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | head -1 | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
   printf "Loopback_Device:\t" | tee -a $CONF_OUTPUT
-  printf "$DEV \t" | tee -a $CONF_OUTPUT
-  printf "$NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
-  printf "$NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+  printf "| $DEV \t" | tee -a $CONF_OUTPUT
+  printf "| $NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+  printf "| $NET_DEVICE_NETMASK \t|" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
+  echo ""
 done
 
 Test_detection command teamdctl
 if [[ "$?" == "0" ]]
   then
-      echo -e "TEAM\t\t\tDevice\t\tState\tIP\t\tMask\t"
+    Test_detection kernel_module team
+    if [[ "$?" == "0" ]]
+      then
+        TEAM_DEVICE=$(find /sys/class/net/* -lname "*team*" | sed -e "s/\// /g" | awk '{print $4}' )
+        for TEAM_DEV in $TEAM_DEVICE
+        do
+          TEAM_DEVICE_LINK_STATE=$(cat /sys/class/net/$TEAM_DEV/carrier 2>/dev/null >/dev/null && printf "ok" || printf "ko")
+          TEAM_DEVICE_STATE=$(cat /sys/class/net/$TEAM_DEV/operstate 2>/dev/null  || printf "down")
+          #TEAM_DEVICE_SPEED=$(cat /sys/class/net/$DEV/speed 2>/dev/null  || printf "down")
+          TEAM_DEVICE_IP=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
+          TEAM_DEVICE_NETMASK=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
+          echo -e "\t\t\t| Dev\t| Link\t| State\t| IP\t\t| Mask\t"
+          echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+          printf "Teaming_Net_Device:\t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEV\t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
+          #printf "$TEAM_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEVICE_IP\t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+          echo -e "" | tee -a $CONF_OUTPUT
+          echo ""
+        done
+    fi
   else
       echo "NO TEAM"
 fi
@@ -161,6 +187,9 @@ if [[ "$?" == "0" ]]
       done
 fi
 
+Test_detection kernel_module bridge
+if [[ "$?" == "0" ]]
+then
 echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
 for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
 do
@@ -174,6 +203,7 @@ do
   printf "$NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
 done
+fi
 
 Test_detection command docker
 if [[ "$?" == "0" ]]
