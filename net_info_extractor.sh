@@ -8,14 +8,14 @@ Command_Detection() {
 for command in docker nmcli qemu kubectl qemu teamdctl
 do
   if [ -x "$(command -v $command)" ]
-    then echo detection.$command=yes >> $CONFIG_FILE
-    else echo detection.$command=no >> $CONFIG_FILE
+    then echo detection.command.$command=yes >> $CONFIG_FILE
+    else echo detection.command.$command=no >> $CONFIG_FILE
   fi
 done
 }
 
 Test_detection() {
-if [ $(cat $CONFIG_FILE | grep detection.$1 | cut -f 2 -d '=') = "yes" ]
+if [ $(cat $CONFIG_FILE | grep detection.$1.$2 | cut -f 2 -d '=') = "yes" ]
   then return 0
   else return 1
 fi
@@ -24,9 +24,9 @@ fi
 Kernel_Module_Detection() {
   for module in veth bridge ip_tables team
   do
-    if [ "$(lsmod | grep $module |awk '{print $1}' | grep -v $module_ )" ]
-      then echo detection.$module=yes >> $CONFIG_FILE
-      else echo detection.$module=no >> $CONFIG_FILE
+    if [ "$(lsmod | grep $module |awk '{print $1}' | grep -v "$module"_ )" ]
+      then echo detection.kernel_module.$module=yes >> $CONFIG_FILE
+      else echo detection.kernel_module.$module=no >> $CONFIG_FILE
     fi
   done
 
@@ -134,7 +134,7 @@ do
   echo -e "" | tee -a $CONF_OUTPUT
 done
 
-Test_detection teamdctl
+Test_detection command teamdctl
 if [[ "$?" == "0" ]]
   then
       echo -e "TEAM\t\t\tDevice\t\tState\tIP\t\tMask\t"
@@ -142,7 +142,7 @@ if [[ "$?" == "0" ]]
       echo "NO TEAM"
 fi
 
-Test_detection docker
+Test_detection command docker
 if [[ "$?" == "0" ]]
   then
       get_docker_info
