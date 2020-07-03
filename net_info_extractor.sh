@@ -103,8 +103,8 @@ VIRTUAL_ETHERNET_NET_DEVICE=$(find /sys/class/net/* -lname "*veth**" | sed -e "s
 LOOPBACK_NET_DEVICE=$(find /sys/class/net/* -lname "*lo" | sed -e "s/\// /g" | awk '{print $4}' )
 DOCKER_NET_DEVICE=$(find /sys/class/net/* -lname "*docker*" | sed -e "s/\// /g" | awk '{print $4}' )
 
-echo -e "\t\t\t| Dev \t| Link\t| State\t| Speed\t| IP\t\t| Mask\t"
-echo -e "\t\t\t ------- ------- ------- ------- --------------- -------\t"
+echo -e "\t\t\t| Dev \t| Link\t| State\t| Speed\t| IP\t\t\t| Mask\t| Team"
+echo -e "\t\t\t ------- ------- ------- ------- ----------------------- ------- -------\t"
 for DEV in $PHYSICAL_NET_DEVICE
 do
 PHYSICAL_NET_DEVICE_LINK_STATE=$(cat /sys/class/net/$DEV/carrier 2>/dev/null >/dev/null && printf "ok" || printf "ko")
@@ -118,8 +118,18 @@ PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | c
   printf "| $PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-  printf "| $PHYSICAL_NET_DEVICE_IP\t" | tee -a $CONF_OUTPUT
+  printf "%-17s\t" "| $PHYSICAL_NET_DEVICE_IP" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+  Test_detection command teamdctl
+  if [[ "$?" == "0" ]]
+    then
+      Test_detection kernel_module team
+      if [[ "$?" == "0" ]]
+        then
+          PHYSICAL_NET_DEVICE_TEAM=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9  2>/dev/null || printf "down")
+          printf "| $PHYSICAL_NET_DEVICE_TEAM \t" | tee -a $CONF_OUTPUT
+      fi
+  fi
   echo -e "" | tee -a $CONF_OUTPUT
 done
 echo ""
@@ -152,14 +162,14 @@ if [[ "$?" == "0" ]]
           #TEAM_DEVICE_SPEED=$(cat /sys/class/net/$DEV/speed 2>/dev/null  || printf "down")
           TEAM_DEVICE_IP=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
           TEAM_DEVICE_NETMASK=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
-          echo -e "\t\t\t| Dev\t| Link\t| State\t| IP\t\t| Mask\t"
-          echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+          echo -e "\t\t\t| Dev\t| Link\t| State\t| IP\t\t\t| Mask\t"
+          echo -e "\t\t\t ------- ------- ------- ----------------------- ------- \t"
           printf "Teaming_Net_Device:\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEV\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
           #printf "$TEAM_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-          printf "| $TEAM_DEVICE_IP\t" | tee -a $CONF_OUTPUT
+          printf "%-17s\t" "| $TEAM_DEVICE_IP" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
           echo -e "" | tee -a $CONF_OUTPUT
         done
