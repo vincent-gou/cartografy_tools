@@ -118,7 +118,7 @@ PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | c
   printf "| $PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-  printf "| $PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_IP\t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
 done
@@ -162,8 +162,8 @@ if [[ "$?" == "0" ]]
           printf "| $TEAM_DEVICE_IP\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
           echo -e "" | tee -a $CONF_OUTPUT
-          echo ""
         done
+      echo ""
     fi
   else
       echo "NO TEAM"
@@ -173,8 +173,8 @@ Test_detection command docker
 if [[ "$?" == "0" ]]
   then
       get_docker_info
-      echo -e "\t\t\t| Dev\t| State\t| IP\t\t| Mask\t"
-      echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+      echo -e "\t\t\t| Dev\t\t| State\t| IP\t\t| Mask\t"
+      echo -e "\t\t\t --------------- ------- -------------- ------- \t"
       for DEV in $DOCKER_NET_DEVICE
       do
       NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
@@ -187,6 +187,7 @@ if [[ "$?" == "0" ]]
       printf "| $NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
       echo -e "" | tee -a $CONF_OUTPUT
       done
+  echo ""
 fi
 
 Test_detection command brctl
@@ -195,8 +196,8 @@ if [[ "$?" == "0" ]]
     Test_detection kernel_module bridge
     if [[ "$?" == "0" ]]
       then
-        echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
-        echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+        echo -e "\t\t\tDevice\t\t\tState\tIP\t\tMask\t"
+        echo -e "\t\t\t ----------------------- -------------- ------- \t"
         for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
         do
           NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
@@ -235,8 +236,8 @@ if [[ "$?" == "0" ]]
       printf "%-10s\t" "| $DOCKER_CONTAINER_GATEWAY" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_BRIDGE\t" | tee -a $CONF_OUTPUT
       echo -e | tee -a $CONF_OUTPUT
-      echo ""
       done
+    echo ""
 fi
 
 
