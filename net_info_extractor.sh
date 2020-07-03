@@ -5,7 +5,7 @@ rm -f $CONF_OUTPUT
 rm -f $CONFIG_FILE
 
 Command_Detection() {
-for command in docker nmcli qemu kubectl qemu teamdctl
+for command in docker nmcli qemu kubectl qemu teamdctl brctl
 do
   if [ -x "$(command -v $command)" ]
     then echo detection.command.$command=yes >> $CONFIG_FILE
@@ -104,7 +104,7 @@ LOOPBACK_NET_DEVICE=$(find /sys/class/net/* -lname "*lo" | sed -e "s/\// /g" | a
 DOCKER_NET_DEVICE=$(find /sys/class/net/* -lname "*docker*" | sed -e "s/\// /g" | awk '{print $4}' )
 
 echo -e "\t\t\t| Dev \t| Link\t| State\t| Speed\t| IP\t\t| Mask\t"
-echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+echo -e "\t\t\t ------- ------- ------- ------- --------------- -------\t"
 for DEV in $PHYSICAL_NET_DEVICE
 do
 PHYSICAL_NET_DEVICE_LINK_STATE=$(cat /sys/class/net/$DEV/carrier 2>/dev/null >/dev/null && printf "ok" || printf "ko")
@@ -118,13 +118,14 @@ PHYSICAL_NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | c
   printf "| $PHYSICAL_NET_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
-  printf "| $PHYSICAL_NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+  printf "| $PHYSICAL_NET_DEVICE_IP \t\t" | tee -a $CONF_OUTPUT
   printf "| $PHYSICAL_NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
   echo -e "" | tee -a $CONF_OUTPUT
 done
 echo ""
 
 echo -e "\t\t\t| Dev\t| IP\t\t| Mask\t|"
+echo -e "\t\t\t ------- --------------- ------- \t"
 for DEV in $LOOPBACK_NET_DEVICE
 do
   NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | head -1 |  cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
@@ -187,23 +188,27 @@ if [[ "$?" == "0" ]]
       done
 fi
 
-Test_detection kernel_module bridge
+Test_detection command brctl
 if [[ "$?" == "0" ]]
-then
-echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
-for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
-do
-  NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
-  NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
-  NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
-  printf "Virtual_Bridge_Device:\t" | tee -a $CONF_OUTPUT
-  printf "$DEV\t" | tee -a $CONF_OUTPUT
-  printf "$NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
-  printf "$NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
-  printf "$NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
-  echo -e "" | tee -a $CONF_OUTPUT
-done
-fi
+  then
+    Test_detection kernel_module bridge
+    if [[ "$?" == "0" ]]
+      then
+        echo -e "\t\t\tDevice\t\tState\tIP\t\tMask\t"
+        for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
+        do
+          NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
+          NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
+          NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
+          printf "Virtual_Bridge_Device:\t" | tee -a $CONF_OUTPUT
+          printf "$DEV\t" | tee -a $CONF_OUTPUT
+          printf "$NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
+          printf "$NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
+          printf "$NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
+          echo -e "" | tee -a $CONF_OUTPUT
+        done
+    fi
+  fi
 
 Test_detection command docker
 if [[ "$?" == "0" ]]
