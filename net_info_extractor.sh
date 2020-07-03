@@ -21,6 +21,17 @@ if [ $(cat $CONFIG_FILE | grep detection.$1 | cut -f 2 -d '=') = "yes" ]
 fi
 }
 
+Kernel_Module_Detection() {
+  for module in veth bridge ip_tables team
+  do
+    if [ "$(lsmod | grep $module |awk '{print $1}' | grep -v $module_ )" ]
+      then echo detection.$module=yes >> $CONFIG_FILE
+      else echo detection.$module=no >> $CONFIG_FILE
+    fi
+  done
+
+}
+
 get_network_mode() {
    docker inspect --format='{{.HostConfig.NetworkMode}}' "$1"
 }
@@ -80,7 +91,11 @@ if [ -x "$(command -v docker)" ]
 fi
 }
 
+# Detection functions
 Command_Detection
+Kernel_Module_Detection
+
+
 # Run Physical Card detection
 PHYSICAL_NET_DEVICE=$(find /sys/class/net/* -not -lname "*virtual*" | sed -e "s/\// /g" | awk '{print $4}' )
 VIRTUAL_BRIDGE_NET_DEVICE=$(find /sys/class/net/* -lname "*br-*" | sed -e "s/\// /g" | awk '{print $4}' )
