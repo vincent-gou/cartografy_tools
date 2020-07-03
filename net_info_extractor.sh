@@ -4,7 +4,7 @@ CONFIG_FILE=/tmp/net_extractor_info.ini
 rm -f $CONF_OUTPUT
 rm -f $CONFIG_FILE
 
-Detection() {
+Command_Detection() {
 for command in docker nmcli qemu kubectl qemu teamdctl
 do
   if [ -x "$(command -v $command)" ]
@@ -80,7 +80,7 @@ if [ -x "$(command -v docker)" ]
 fi
 }
 
-Detection
+Command_Detection
 # Run Physical Card detection
 PHYSICAL_NET_DEVICE=$(find /sys/class/net/* -not -lname "*virtual*" | sed -e "s/\// /g" | awk '{print $4}' )
 VIRTUAL_BRIDGE_NET_DEVICE=$(find /sys/class/net/* -lname "*br-*" | sed -e "s/\// /g" | awk '{print $4}' )
