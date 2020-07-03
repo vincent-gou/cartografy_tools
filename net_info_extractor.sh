@@ -173,7 +173,7 @@ Test_detection command docker
 if [[ "$?" == "0" ]]
   then
       get_docker_info
-      echo -e "\t\t\t| Dev\t\t| State\t| IP\t\t| Mask\t"
+      echo -e "\t\t\t| Dev\t| State\t| IP\t\t| Mask\t"
       echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
       for DEV in $DOCKER_NET_DEVICE
       do
@@ -181,7 +181,7 @@ if [[ "$?" == "0" ]]
       NET_DEVICE_IP=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
       NET_DEVICE_NETMASK=$(ip -o -4 addr show dev $DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || print "down")
       printf "Docker_Virtual_Device:\t" | tee -a $CONF_OUTPUT
-      printf "| $DEV\t\t" | tee -a $CONF_OUTPUT
+      printf "| $DEV\t" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_IP \t" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
