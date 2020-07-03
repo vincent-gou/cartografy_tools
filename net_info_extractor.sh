@@ -197,7 +197,7 @@ if [[ "$?" == "0" ]]
     if [[ "$?" == "0" ]]
       then
         echo -e "\t\t\t| Dev\t\t\t| State\t| IP\t\t| Mask\t"
-        echo -e "\t\t\t ----------------------- ------- ------- ------- \t"
+        echo -e "\t\t\t ----------------------- ------- --------------- -------\t"
         for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
         do
           NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
@@ -217,7 +217,7 @@ if [[ "$?" == "0" ]]
 Test_detection command docker
 if [[ "$?" == "0" ]]
   then
-    echo -e "\t\t\t| Dev\t\t| State\t| Container\t\t| IP\t| Docker_network\t| Gateway\t\t| Bridge"
+    echo -e "\t\t\t| Dev\t\t| State\t| Container\t| IP\t\t| Docker_network\t| Gateway\t| Bridge"
     echo -e "\t\t\t --------------- ------- -------------- ------- -------------- -------------- -------\t"
     for DEV in $VIRTUAL_ETHERNET_NET_DEVICE
       do
@@ -232,7 +232,7 @@ if [[ "$?" == "0" ]]
       printf "| $NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_NAME" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_IP" | tee -a $CONF_OUTPUT
-      printf "%-10s\t" "| $DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
+      printf "%-12s\t" "| $DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_GATEWAY" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_BRIDGE\t" | tee -a $CONF_OUTPUT
       echo -e | tee -a $CONF_OUTPUT
