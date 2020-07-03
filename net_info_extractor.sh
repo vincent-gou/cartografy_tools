@@ -175,7 +175,7 @@ do
   echo -e "" | tee -a $CONF_OUTPUT
 done
 
-Test_detection docker
+Test_detection command docker
 if [[ "$?" == "0" ]]
   then
     echo -e "\t\t\tDevice\t\tState\tContainer\t\tIP\tDocker_network\tGateway\t\tBridge"
