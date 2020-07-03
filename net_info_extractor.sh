@@ -196,8 +196,8 @@ if [[ "$?" == "0" ]]
     Test_detection kernel_module bridge
     if [[ "$?" == "0" ]]
       then
-        echo -e "\t\t\tDevice\t\t\tState\tIP\t\tMask\t"
-        echo -e "\t\t\t ----------------------- -------------- ------- \t"
+        echo -e "\t\t\t| Dev\t\t\t| State\t| IP\t\t| Mask\t"
+        echo -e "\t\t\t ----------------------- ------- ------- ------- \t"
         for DEV in $VIRTUAL_BRIDGE_NET_DEVICE
         do
           NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 9 2>/dev/null || printf "down")
@@ -217,8 +217,8 @@ if [[ "$?" == "0" ]]
 Test_detection command docker
 if [[ "$?" == "0" ]]
   then
-    echo -e "\t\t\tDevice\t\tState\tContainer\t\tIP\tDocker_network\tGateway\t\tBridge"
-    echo -e "\t\t\t ------- ------- ------- -------------- ------- \t"
+    echo -e "\t\t\t| Dev\t\t| State\t| Container\t\t| IP\t| Docker_network\t| Gateway\t\t| Bridge"
+    echo -e "\t\t\t --------------- ------- -------------- ------- -------------- -------------- -------\t"
     for DEV in $VIRTUAL_ETHERNET_NET_DEVICE
       do
       NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 11 2>/dev/null || printf "down")
