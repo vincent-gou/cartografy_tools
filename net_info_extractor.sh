@@ -228,7 +228,7 @@ Test_detection command docker
 if [[ "$?" == "0" ]]
   then
     echo -e "\t\t\t| Dev\t\t| State\t| Container\t| IP\t\t| Docker_network\t| Gateway\t| Bridge"
-    echo -e "\t\t\t --------------- ------- --------------- ----------------- ------------------- -------\t"
+    echo -e "\t\t\t --------------- ------- --------------- --------------- ---------------------- -------------- ----------\t"
     for DEV in $VIRTUAL_ETHERNET_NET_DEVICE
       do
       NET_DEVICE_STATE=$(ip -o -4 link show dev $DEV | cut -d ' ' -f 11 2>/dev/null || printf "down")
