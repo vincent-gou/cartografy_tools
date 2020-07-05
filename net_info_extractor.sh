@@ -242,7 +242,7 @@ if [[ "$?" == "0" ]]
       printf "| $NET_DEVICE_STATE\t" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_NAME" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_IP" | tee -a $CONF_OUTPUT
-      printf "%-12s\t" "| $DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
+      printf "%-20s\t" "| $DOCKER_NETWORK_NAME" | tee -a $CONF_OUTPUT
       printf "%-10s\t" "| $DOCKER_CONTAINER_GATEWAY" | tee -a $CONF_OUTPUT
       printf "| $NET_DEVICE_BRIDGE\t" | tee -a $CONF_OUTPUT
       echo -e | tee -a $CONF_OUTPUT
