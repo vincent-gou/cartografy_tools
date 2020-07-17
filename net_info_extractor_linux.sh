@@ -169,7 +169,7 @@ if [[ "$?" == "0" ]]
           printf "| $TEAM_DEV\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_STATE \t" | tee -a $CONF_OUTPUT
-          printf "| $TEAM_DEVICE_PROTO \t" | tee -a $CONF_OUTPUT
+          printf "| $TEAM_DEVICE_PROTO\t" | tee -a $CONF_OUTPUT
           #printf "$TEAM_DEVICE_SPEED \t" | tee -a $CONF_OUTPUT
           printf "%-17s\t" "| $TEAM_DEVICE_IP" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_NETMASK \t" | tee -a $CONF_OUTPUT
