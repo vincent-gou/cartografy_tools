@@ -164,7 +164,7 @@ if [[ "$?" == "0" ]]
           #TEAM_DEVICE_SPEED=$(cat /sys/class/net/$DEV/speed 2>/dev/null  || printf "down")
           TEAM_DEVICE_IP=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 1 -d '/' 2>/dev/null || printf "down")
           TEAM_DEVICE_NETMASK=$(ip -o -4 addr show dev $TEAM_DEV | cut -d ' ' -f 7  | cut -f 2 -d '/' 2>/dev/null || printf "down")
-          TEAM_DEVICE_PROTO=$(ip -o -4 addr show dev $TEAM_DEV | grep dynamic 2&1>/dev/null && printf "dhcp" || printf "static")
+          TEAM_DEVICE_PROTO=$(ip -o -4 addr show dev $TEAM_DEV | grep dynamic &>/dev/null && printf "dhcp" || printf "static")
           printf "Teaming_Net_Device:\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEV\t" | tee -a $CONF_OUTPUT
           printf "| $TEAM_DEVICE_LINK_STATE \t" | tee -a $CONF_OUTPUT
