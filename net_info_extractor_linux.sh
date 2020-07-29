@@ -5,7 +5,7 @@ rm -f $CONF_OUTPUT
 rm -f $CONFIG_FILE
 
 Command_Detection() {
-for command in docker nmcli qemu kubectl qemu teamdctl brctl
+for command in docker nmcli qemu kubectl qemu teamdctl brctl iptables firewall-cmd ss
 do
   if [ -x "$(command -v $command)" ]
     then echo detection.command.$command=yes >> $CONFIG_FILE
@@ -252,6 +252,18 @@ if [[ "$?" == "0" ]]
     echo ""
 fi
 
+Test_detection command iptables
+if [[ "$?" == "0" ]]
+  then
+    Test_detection command firewall-cmd
+fi
+
+Test_detection command ss
+if [[ "$?" == "0" ]]
+  then
+    echo -e "\t\t\t| Dev\t\t| State\t| Container\t| IP\t\t| Docker_network\t| Gateway\t| Bridge"
+    echo -e "\t\t\t --------------- ------- --------------- --------------- ----------------------- --------------- ----------\t"
+fi
 
 
 Diagram() {
