@@ -259,11 +259,11 @@ if [[ "$?" == "0" ]]
 fi
 
 Test_detection command ss
-if [[ "$?" == "0" ]]
-  then
-    echo -e "\t\t\t| Dev\t\t| State\t| Container\t| IP\t\t| Docker_network\t| Gateway\t| Bridge"
-    echo -e "\t\t\t --------------- ------- --------------- --------------- ----------------------- --------------- ----------\t"
-fi
+#if [[ "$?" == "0" ]]
+#  then
+#    echo -e "\t\t\t| Dev\t\t| State\t| Container\t| IP\t\t| Docker_network\t| Gateway\t| Bridge"
+#    echo -e "\t\t\t --------------- ------- --------------- --------------- ----------------------- --------------- ----------\t"
+#fi
 
 
 Diagram() {
