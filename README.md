@@ -17,5 +17,11 @@ It can detect if a few commands are available and kernel modules loaded.
 #### Linux and Docker contaners
 ![Linux and Docker containers example](https://github.com/vincent-gou/cartografy_tools/blob/master/Documentation/pictures/linux_example_2_docker.png)
 
+#### Linux and teaming device
+![Linux and teaming example](https://github.com/vincent-gou/cartografy_tools/blob/master/Documentation/pictures/linux_example_3_teaming.png)
+
+#### Linux and multi-device teaming
+![Linux and multi-device teaming example](https://github.com/vincent-gou/cartografy_tools/blob/master/Documentation/pictures/linux_example_4_multi-device_teaming.png)
+
 ## Windows scripts
 
