@@ -14,7 +14,7 @@ It can detect if a few commands are available and kernel modules loaded.
 ##### Linux and Docker 
 ![Linux example](https://github.com/vincent-gou/cartografy_tools/blob/master/Documentation/pictures/linux_example_1.png)
 
-#### Linux and Docker contaners
+#### Linux and Docker containers
 ![Linux and Docker containers example](https://github.com/vincent-gou/cartografy_tools/blob/master/Documentation/pictures/linux_example_2_docker.png)
 
 #### Linux and teaming device
